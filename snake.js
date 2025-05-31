@@ -5,9 +5,11 @@ const canvasSize = 400;
 let snake = [{ x: 9 * box, y: 10 * box }];
 let direction = null;
 let food = randomPosition();
+let specialFood = null;
 let score = 0;
 let gameInterval = null;
 let isGameOver = false;
+let missionText = '목표: 10점 달성!';
 
 function randomPosition() {
   return {
@@ -20,6 +22,12 @@ function draw() {
   ctx.fillStyle = '#222';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Draw mission
+  ctx.fillStyle = '#fff';
+  ctx.font = '18px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText(missionText, 10, 24);
+
   // Draw snake
   for (let i = 0; i < snake.length; i++) {
     ctx.fillStyle = i === 0 ? '#6f6' : '#afa';
@@ -29,6 +37,15 @@ function draw() {
   // Draw food
   ctx.fillStyle = '#f44';
   ctx.fillRect(food.x, food.y, box, box);
+
+  // Draw special food
+  if (specialFood) {
+    ctx.fillStyle = '#ff0';
+    ctx.fillRect(specialFood.x, specialFood.y, box, box);
+    ctx.fillStyle = '#222';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('★', specialFood.x + 4, specialFood.y + 16);
+  }
 }
 
 function move() {
@@ -64,12 +81,26 @@ function move() {
     score++;
     document.getElementById('score').textContent = 'Score: ' + score;
     food = randomPosition();
+    // 5점마다 특수 아이템 등장
+    if (score % 5 === 0 && !specialFood) {
+      specialFood = randomPosition();
+    }
+  } else if (specialFood && head.x === specialFood.x && head.y === specialFood.y) {
+    snake.unshift(head);
+    score += 3;
+    document.getElementById('score').textContent = 'Score: ' + score;
+    specialFood = null;
   } else {
     snake.unshift(head);
     snake.pop();
   }
 
   draw();
+
+  // 미션 달성 시 텍스트 변경
+  if (score >= 10) {
+    missionText = '축하합니다! 목표 달성!';
+  }
 }
 
 function gameOver() {
@@ -88,8 +119,10 @@ function restartGame() {
   snake = [{ x: 9 * box, y: 10 * box }];
   direction = null;
   food = randomPosition();
+  specialFood = null;
   score = 0;
   isGameOver = false;
+  missionText = '목표: 10점 달성!';
   document.getElementById('score').textContent = 'Score: 0';
   document.getElementById('restart').style.display = 'none';
   draw();
