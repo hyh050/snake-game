@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 const box = 20;
 const canvasSize = 400;
 let snake = [{ x: 9 * box, y: 10 * box }];
-let direction = null;
+let direction = 'RIGHT'; // 초기 방향을 'RIGHT'로 설정
 let food = randomPosition();
 let specialFood = null;
 let score = 0;
@@ -117,7 +117,7 @@ function gameOver() {
 
 function restartGame() {
   snake = [{ x: 9 * box, y: 10 * box }];
-  direction = null;
+  direction = 'RIGHT'; // 재시작 시에도 초기 방향 설정
   food = randomPosition();
   specialFood = null;
   score = 0;
